@@ -4,65 +4,48 @@ const bodyParser = require("body-parser");
 const path = require("path");
 
 const app = express();
-const PORT = 3000;
-
-// Middleware
+app.use(express.static("frontend"));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 
-// Banco de dados SQLite
-const db = new sqlite3.Database("./backend/usuarios.sqlite", (err) => {
-  if (err) return console.error("Erro ao abrir banco:", err.message);
-  console.log("Banco aberto com sucesso!");
+// Conexões separadas
+const dbAlunos = new sqlite3.Database("./backend/alunos.sqlite");
+const dbProfessores = new sqlite3.Database("./backend/professores.sqlite");
 
-  // Cria a tabela de usuários
-  db.run(`
-    CREATE TABLE IF NOT EXISTS usuarios (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      nome TEXT,
-      email TEXT UNIQUE,
-      senha TEXT,
-      role TEXT,
-      turma TEXT
-    )
-  `, (err) => {
-    if (err) return console.error("Erro ao criar tabela:", err.message);
-    console.log("Tabela de usuários pronta!");
+// Criação inicial das tabelas
+dbAlunos.run(`CREATE TABLE IF NOT EXISTS alunos (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  nome TEXT,
+  email TEXT UNIQUE,
+  senha TEXT,
+  turma TEXT
+)`);
 
-    // Insere usuário admin (diretor) padrão se não existir
-    db.get("SELECT * FROM usuarios WHERE email = ?", ["admin@site.com"], (err, row) => {
-      if (err) return console.error("Erro ao buscar usuário admin:", err.message);
-      if (!row) {
-        db.run(
-          "INSERT INTO usuarios (nome, email, senha, role, turma) VALUES (?, ?, ?, ?, ?)",
-          ["Administrador", "admin@site.com", "1234", "diretor", null],
-          (err) => {
-            if (err) console.error("Erro ao criar usuário admin:", err.message);
-            else console.log("Usuário admin criado: admin@site.com | senha: 1234 | role: diretor");
-          }
-        );
-      } else {
-        console.log("Usuário admin já existe no banco.");
-      }
-    });
+dbProfessores.run(`CREATE TABLE IF NOT EXISTS professores (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  nome TEXT,
+  email TEXT UNIQUE,
+  senha TEXT,
+  disciplina TEXT
+)`);
+
+// Rota de login aluno
+app.post("/login/aluno", (req, res) => {
+  const { email, senha } = req.body;
+  dbAlunos.get("SELECT * FROM alunos WHERE email = ? AND senha = ?", [email, senha], (err, row) => {
+    if (err) return res.status(500).json({ message: "Erro no servidor" });
+    if (!row) return res.status(401).json({ message: "Credenciais inválidas" });
+    res.json({ message: "Login aluno bem-sucedido", user: row });
   });
 });
 
-// Endpoint de login
-app.post("/login", (req, res) => {
+// Rota de login prosfessor
+app.post("/login/professor", (req, res) => {
   const { email, senha } = req.body;
-
-  db.get(
-    "SELECT * FROM usuarios WHERE email = ? AND senha = ?",
-    [email, senha],
-    (err, row) => {
-      if (err) return res.status(500).json({ message: "Erro no servidor" });
-      if (!row) return res.status(401).json({ message: "Credenciais inválidas" });
-
-      // Retorna nome, role e turma
-      res.json({ message: "Login bem-sucedido", nome: row.nome, role: row.role, turma: row.turma });
-    }
-  );
+  dbProfessores.get("SELECT * FROM professores WHERE email = ? AND senha = ?", [email, senha], (err, row) => {
+    if (err) return res.status(500).json({ message: "Erro no servidor" });
+    if (!row) return res.status(401).json({ message: "Credenciais inválidas" });
+    res.json({ message: "Login professor bem-sucedido", user: row });
+  });
 });
 
 // Endpoint de teste
@@ -73,6 +56,8 @@ app.get("/ping", (req, res) => {
 // Servir arquivos do frontend
 app.use(express.static(path.join(__dirname, "../frontend")));
 
+
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor rodando em http://localhost:${PORT}`);
 });

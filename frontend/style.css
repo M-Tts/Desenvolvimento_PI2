@@ -1,17 +1,33 @@
-body {
-  font-family: Arial, sans-serif;
-  background-color: #f2f2f2;
-  text-align: center;
-  margin-top: 50px;
-}
-
-input {
-  padding: 8px;
-  width: 200px;
-}
-
-button {
+.btn {
   padding: 10px 20px;
+  margin: 5px;
   font-size: 16px;
   cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  background-color: #4CAF50;
+  color: white;
+  transition: background-color 0.3s;
+}
+
+.btn:hover {
+  background-color: #45a049;
+}
+
+/* Botões secundários (Esqueci senha / Voltar) */
+.btn.secundario {
+  background-color: #f0f0f0;
+  color: #333;
+  border: 1px solid #ccc;
+}
+
+.btn.secundario:hover {
+  background-color: #e0e0e0;
+}
+
+/* Container para deixar os dois botões lado a lado */
+.botoesExtras {
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;       /* Espaço entre os botões */
 }

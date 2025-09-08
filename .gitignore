@@ -1,4 +1,5 @@
 node_modules/
-backend/usuarios.sqlite
+backend/alunos.sqlite
+backend/professores.sqlite
 *.log
 .env
