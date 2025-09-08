@@ -1,0 +1,4 @@
+node_modules/
+backend/usuarios.sqlite
+*.log
+.env
