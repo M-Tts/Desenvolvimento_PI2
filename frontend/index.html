@@ -3,13 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <title>Bem-vindo</title>
-  <link rel="stylesheet" href="style.css">
+ <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+  <main class="container">
+
+  <div class="label">
   <h1>Bem-vindo ao Sistema</h1>
   <p>Escolha como deseja acessar:</p>
+  </div>
 
-  <button onclick="location.href='aluno/login.html'">Sou Aluno</button>
-  <button onclick="location.href='professor/login.html'">Sou Professor</button>
+  <div class="buttons">
+  <button onclick="location.href='aluno/login.html'" class="Aluno">Aluno</button>
+  <button onclick="location.href='professor/login.html'" class="Professor">Professor</button>
+  </div>
+
+  </main>
+
 </body>
 </html>
