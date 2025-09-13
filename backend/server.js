@@ -50,7 +50,7 @@ app.post("/login/professor", (req, res) => {
 
 // Endpoint de teste
 app.get("/ping", (req, res) => {
-  res.send("Servidor funcionando! 🚀");
+  res.send("Servidor funcionando!");
 });
 
 // Servir arquivos do frontend
